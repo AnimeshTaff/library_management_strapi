@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "books",
+  "info": {
+    "singularName": "book",
+    "pluralName": "books",
+    "displayName": "Book",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "isbn": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "Published_date": {
+      "type": "date",
+      "required": true
+    },
+    "Desc": {
+      "type": "blocks",
+      "required": true
+    },
+    "Price": {
+      "type": "decimal",
+      "required": true,
+      "min": 50
+    },
+    "Cover_image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files"
+      ]
+    },
+    "Rating": {
+      "type": "decimal",
+      "required": true
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::author.author",
+      "inversedBy": "book"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::categories.categories",
+      "mappedBy": "books"
+    }
+  }
+}

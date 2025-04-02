@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "categorize",
+  "info": {
+    "singularName": "categories",
+    "pluralName": "categorize",
+    "displayName": "categories"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Slug": {
+      "type": "uid",
+      "targetField": "Name",
+      "required": true
+    },
+    "books": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::book.book",
+      "inversedBy": "categories"
+    }
+  }
+}
