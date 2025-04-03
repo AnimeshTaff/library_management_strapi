@@ -423,7 +423,7 @@ export interface ApiBookBook extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    Desc: Schema.Attribute.Blocks & Schema.Attribute.Required;
+    Desc: Schema.Attribute.String & Schema.Attribute.Required;
     isbn: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
