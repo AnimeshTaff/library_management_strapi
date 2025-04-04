@@ -1,55 +1,35 @@
-'use strict';
-
 module.exports = {
-  routes: [
-    // ✅ GET All Books (Without Author)
-    {
-      method: "GET",
-      path: "/books-only",
-      handler: "book.booksOnly",
-      config: {
-        auth: false,
+    routes: [
+      {
+        method: 'GET',
+        path: '/books-only',
+        handler: 'book.booksOnly',
       },
-    },
-
-    // ✅ GET All Books (With Author)
-    {
-      method: "GET",
-      path: "/books-with-author",
-      handler: "book.booksWithAuthor",
-      config: {
-        auth: false,
+      {
+        method: 'GET',
+        path: '/books-only/:id', 
+        handler: 'book.getBookById',
       },
-    },
-
-    // ✅ CREATE a Book
-    {
-      method: "POST",
-      path: "/books",
-      handler: "book.createBook",
-      config: {
-        auth: false,
+      {
+        method: 'GET',
+        path: '/books-with-author',
+        handler: 'book.booksWithAuthor',
       },
-    },
-
-    // ✅ UPDATE a Book (By ID)
-    {
-      method: "PUT",
-      path: "/books/:id",
-      handler: "book.updateBook",
-      config: {
-        auth: false,
+      {
+        method: 'POST',
+        path: '/books',
+        handler: 'book.createBook',
       },
-    },
-
-    // ✅ DELETE a Book (By ID)
-    {
-      method: "DELETE",
-      path: "/books/:id",
-      handler: "book.deleteBook",
-      config: {
-        auth: false,
+      {
+        method: 'PUT',
+        path: '/books/:id',
+        handler: 'book.updateBook',
       },
-    },
-  ],
-};
+      {
+        method: 'DELETE',
+        path: '/books/:id',
+        handler: 'book.deleteBook',
+      },
+    ],
+  };
+  
