@@ -1,4 +1,3 @@
-
 'use strict';
 
 const { createCoreController } = require('@strapi/strapi').factories;
@@ -13,7 +12,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
 
   // Get a single book by documentId
   async getBookById(ctx) {
-    const { id } = ctx.params; // here id is the documentId
+    const { id } = ctx.params;
     if (!id) {
       return ctx.badRequest('Document ID is required');
     }
@@ -33,7 +32,6 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   // Get books with author and filters
   async booksWithAuthor(ctx) {
     const { query } = ctx.request;
-
     const filters = {};
 
     if (query.title) {
@@ -51,12 +49,22 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
       };
     }
 
+    // Step 1: Resolve author by name
     if (query.authorName) {
-      filters.author = {
-        name: {
-          $eqi: query.authorName,
+      const author = await strapi.db.query('api::author.author').findOne({
+        where: {
+          name: {
+            $containsi: query.authorName,
+          },
         },
-      };
+      });
+
+      if (!author) {
+        return ctx.send({ data: [] });
+      }
+
+      // Step 2: Use author's ID in book filter
+      filters.author = author.id;
     }
 
     const books = await strapi.db.query('api::book.book').findMany({
@@ -102,7 +110,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   // Update a book by documentId
   async updateBook(ctx) {
     try {
-      const { id } = ctx.params; // id here is documentId
+      const { id } = ctx.params;
 
       const book = await strapi.db.query('api::book.book').findOne({
         where: { documentId: id },
@@ -126,7 +134,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   // Delete a book by documentId
   async deleteBook(ctx) {
     try {
-      const { id } = ctx.params; // id here is documentId
+      const { id } = ctx.params;
 
       const book = await strapi.db.query('api::book.book').findOne({
         where: { documentId: id },
