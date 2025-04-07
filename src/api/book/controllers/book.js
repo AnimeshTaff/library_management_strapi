@@ -1,3 +1,4 @@
+
 'use strict';
 
 const { createCoreController } = require('@strapi/strapi').factories;
@@ -10,14 +11,15 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     return ctx.send({ data: books });
   },
 
-  // Get a single book by ID
+  // Get a single book by documentId
   async getBookById(ctx) {
-    const { id } = ctx.params;
+    const { id } = ctx.params; // here id is the documentId
     if (!id) {
-      return ctx.badRequest('Book ID is required');
+      return ctx.badRequest('Document ID is required');
     }
 
-    const book = await strapi.entityService.findOne('api::book.book', id, {
+    const book = await strapi.db.query('api::book.book').findOne({
+      where: { documentId: id },
       populate: { author: true },
     });
 
@@ -97,12 +99,20 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     }
   },
 
-  // Update a book
+  // Update a book by documentId
   async updateBook(ctx) {
     try {
-      const { id } = ctx.params;
+      const { id } = ctx.params; // id here is documentId
 
-      const updatedBook = await strapi.entityService.update('api::book.book', id, {
+      const book = await strapi.db.query('api::book.book').findOne({
+        where: { documentId: id },
+      });
+
+      if (!book) {
+        return ctx.notFound("Book not found");
+      }
+
+      const updatedBook = await strapi.entityService.update('api::book.book', book.id, {
         data: ctx.request.body,
       });
 
@@ -113,12 +123,20 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     }
   },
 
-  // Delete a book
+  // Delete a book by documentId
   async deleteBook(ctx) {
     try {
-      const { id } = ctx.params;
+      const { id } = ctx.params; // id here is documentId
 
-      const deletedBook = await strapi.entityService.delete('api::book.book', id);
+      const book = await strapi.db.query('api::book.book').findOne({
+        where: { documentId: id },
+      });
+
+      if (!book) {
+        return ctx.notFound("Book not found");
+      }
+
+      const deletedBook = await strapi.entityService.delete('api::book.book', book.id);
 
       return ctx.send({ message: "Book deleted successfully", data: deletedBook });
     } catch (error) {
