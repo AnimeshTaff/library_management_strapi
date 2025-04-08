@@ -176,5 +176,28 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     });
 
     return ctx.send({ data: books });
+  },
+
+  // ✅ NEW: Get books by status (published or draft)
+  async booksByStatus(ctx) {
+    const { status } = ctx.query;
+    const locale = ctx.query.locale || 'en';
+
+    let filters = {};
+    if (status === 'published') {
+      filters.publishedAt = { $notNull: true };
+    } else if (status === 'draft') {
+      filters.publishedAt = { $null: true };
+    } else {
+      return ctx.badRequest("Invalid status. Use 'published' or 'draft'.");
+    }
+
+    const books = await strapi.db.query('api::book.book').findMany({
+      where: filters,
+      populate: { author: true, categories: true },
+      locale,
+    });
+
+    return ctx.send({ data: books });
   }
 }));

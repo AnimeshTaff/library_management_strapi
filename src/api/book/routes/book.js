@@ -8,6 +8,7 @@ module.exports = {
     
     // ✅ Correct handler for populate-only
     { method: 'GET', path: '/books/populate', handler: 'book.booksWithPopulate' },
+    { method: 'GET', path: '/books/status', handler: 'book.booksByStatus' },
 
     { method: 'GET', path: '/books/:id', handler: 'book.getBookById' },
     { method: 'POST', path: '/books', handler: 'book.createBook' },
