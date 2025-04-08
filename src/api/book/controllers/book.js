@@ -49,7 +49,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
       };
     }
 
-    // Step 1: Resolve author by name
+    
     if (query.authorName) {
       const author = await strapi.db.query('api::author.author').findOne({
         where: {
@@ -63,7 +63,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
         return ctx.send({ data: [] });
       }
 
-      // Step 2: Use author's ID in book filter
+      
       filters.author = author.id;
     }
 
