@@ -4,15 +4,20 @@ const { createCoreController } = require('@strapi/strapi').factories;
 
 module.exports = createCoreController('api::book.book', ({ strapi }) => ({
 
-  // Get all books without author
+  // Get all books without author (supports locale)
   async booksOnly(ctx) {
-    const books = await strapi.entityService.findMany('api::book.book');
+    const locale = ctx.query.locale || 'en';
+    const books = await strapi.entityService.findMany('api::book.book', {
+      locale,
+    });
     return ctx.send({ data: books });
   },
 
-  // Get a single book by documentId
+  // Get a single book by documentId (supports locale)
   async getBookById(ctx) {
     const { id } = ctx.params;
+    const locale = ctx.query.locale || 'en';
+
     if (!id) {
       return ctx.badRequest('Document ID is required');
     }
@@ -20,6 +25,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     const book = await strapi.db.query('api::book.book').findOne({
       where: { documentId: id },
       populate: { author: true },
+      locale,
     });
 
     if (!book) {
@@ -29,9 +35,10 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     return ctx.send({ data: book });
   },
 
-  // Get books with author and filters
+  // Get books with author and filters (supports locale)
   async booksWithAuthor(ctx) {
     const { query } = ctx.request;
+    const locale = query.locale || 'en';
     const filters = {};
 
     if (query.title) {
@@ -49,7 +56,6 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
       };
     }
 
-    
     if (query.authorName) {
       const author = await strapi.db.query('api::author.author').findOne({
         where: {
@@ -63,7 +69,6 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
         return ctx.send({ data: [] });
       }
 
-      
       filters.author = author.id;
     }
 
@@ -74,6 +79,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
           fields: ['name'],
         },
       },
+      locale,
     });
 
     return ctx.send({ data: books });
@@ -82,7 +88,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   // Create a new book
   async createBook(ctx) {
     try {
-      const { Title, isbn, Published_date, Desc, Price, Rating, author } = ctx.request.body;
+      const { Title, isbn, Published_date, Desc, Price, Rating, author, locale } = ctx.request.body;
 
       if (!Title || !isbn || !Published_date || !Desc || !Price || !Rating) {
         return ctx.badRequest("Missing required fields.");
@@ -97,6 +103,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
           Price,
           Rating,
           author,
+          locale: locale || 'en',
         },
       });
 
@@ -111,9 +118,11 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   async updateBook(ctx) {
     try {
       const { id } = ctx.params;
+      const locale = ctx.query.locale || 'en';
 
       const book = await strapi.db.query('api::book.book').findOne({
         where: { documentId: id },
+        locale,
       });
 
       if (!book) {
@@ -122,6 +131,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
 
       const updatedBook = await strapi.entityService.update('api::book.book', book.id, {
         data: ctx.request.body,
+        locale,
       });
 
       return ctx.send({ data: updatedBook });
@@ -135,16 +145,20 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   async deleteBook(ctx) {
     try {
       const { id } = ctx.params;
+      const locale = ctx.query.locale || 'en';
 
       const book = await strapi.db.query('api::book.book').findOne({
         where: { documentId: id },
+        locale,
       });
 
       if (!book) {
         return ctx.notFound("Book not found");
       }
 
-      const deletedBook = await strapi.entityService.delete('api::book.book', book.id);
+      const deletedBook = await strapi.entityService.delete('api::book.book', book.id, {
+        locale,
+      });
 
       return ctx.send({ message: "Book deleted successfully", data: deletedBook });
     } catch (error) {
