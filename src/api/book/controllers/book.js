@@ -4,7 +4,7 @@ const { createCoreController } = require('@strapi/strapi').factories;
 
 module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   // Get all books without author (supports locale)
-  async booksOnly(ctx) {
+  async getBooksByLocale(ctx) {
     const locale = ctx.query.locale || 'en';
     const books = await strapi.entityService.findMany('api::book.book', {
       locale,
@@ -13,7 +13,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   },
 
   // Filter books by title, rating, price, and author
-  async filterBooks(ctx) {
+  async getBooksByFilter(ctx) {
     const { query } = ctx.request;
     const locale = query.locale || 'en';
     const filters = {};
@@ -46,7 +46,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   },
 
   // Get books with pagination
-  async paginatedBooks(ctx) {
+  async getBooksByPagination(ctx) {
     const { page = 1, pageSize = 10 } = ctx.query;
     const start = (page - 1) * pageSize;
 
@@ -59,7 +59,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   },
 
   // Get sorted books
-  async sortedBooks(ctx) {
+  async getBooksBySort(ctx) {
     const { sort } = ctx.query;
     if (!sort) return ctx.badRequest("Sort query is required");
 
@@ -72,7 +72,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   },
 
   // Get only selected fields
-  async booksWithFields(ctx) {
+  async getBooksByFields(ctx) {
     const { fields } = ctx.query;
     if (!fields) return ctx.badRequest("Fields query is required");
 
@@ -124,7 +124,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   },
 
   // Update book by documentId
-  async updateBook(ctx) {
+  async updateBookById(ctx) {
     const { id } = ctx.params;
     const locale = ctx.query.locale || 'en';
 
@@ -144,7 +144,7 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
   },
 
   // Delete book by documentId
-  async deleteBook(ctx) {
+  async deleteBookById(ctx) {
     const { id } = ctx.params;
     const locale = ctx.query.locale || 'en';
 
@@ -159,8 +159,8 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     return ctx.send({ message: "Deleted", data: deleted });
   },
 
-  // ✅ NEW: Get books with dynamic populate
-  async booksWithPopulate(ctx) {
+  // Get books with dynamic populate
+  async getBooksWithPopulate(ctx) {
     const { populate } = ctx.query;
 
     const populateFields = {};
@@ -178,8 +178,8 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     return ctx.send({ data: books });
   },
 
-  // ✅ NEW: Get books by status (published or draft)
-  async booksByStatus(ctx) {
+  // Get books by status (published or draft)
+  async getBooksByStatus(ctx) {
     const { status } = ctx.query;
     const locale = ctx.query.locale || 'en';
 
@@ -199,5 +199,5 @@ module.exports = createCoreController('api::book.book', ({ strapi }) => ({
     });
 
     return ctx.send({ data: books });
-  }
+  },
 }));
